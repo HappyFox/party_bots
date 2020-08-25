@@ -1,0 +1,82 @@
+:root {
+  --main-bg-color: #fea49f;
+  --grouping-color: #101357;
+  --control-color: #00a0a0;
+  --control-toggled: #007575;
+  --highlight-color: #ffffff;
+
+  --control-gap: 1vmax;
+  touch-action: none;
+  --title-size: 2.5vmax;
+  --title-color: #aaaaaa;
+}
+
+body {
+    font-family: "Courier New", sans-serif;
+    text-align: center;
+    background-color: var(--main-bg-color);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-align: flex-start;
+    flex-direction: column;
+    gap: var(--control-gap);
+}
+
+
+.button {
+    cursor: pointer;
+    user-select: none;
+    border: 2vmin solid;
+    border-color: var(--control-color);
+    height: 7vmax;
+    width: 7vmax;
+    font-size:5vmax;
+    background-color: var(--control-color);
+    color:var(--highlight-color);
+}
+.title{
+    display: flex;
+    justify-content: center;
+    font-size: var(--title-size);
+    color: var(--title-color);
+    background-color: var(--grouping-color);
+    margin-top: 1.5vmax;
+
+}
+.faces{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    color:#F1D1B5;
+    background-color: var(--grouping-color);
+    border: var(--control-gap) solid;
+    border-color: var(--grouping-color);
+    gap: var(--control-gap);
+}
+.red{
+    background-color: red;
+}
+.green{
+    background-color: green;
+}
+.blue{
+    background-color: blue;
+}
+.yellow{
+    background-color: yellow;
+}
+.orange{
+    background-color: orange;
+}
+.purple{
+    background-color: purple;
+}
+.pink{
+    background-color: pink;
+}
