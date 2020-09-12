@@ -18,6 +18,9 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <Hash.h>
+#include <ServoEasing.h>
+
+#include <FastLED.h>
 
 #include <Automaton.h>
 #include "Atm_angry_arm_ani_machine.h"
@@ -26,8 +29,21 @@
 #define USE_SERIAL Serial
 
 
-#define LEFT_SERVO_PIN 12 // D6
-#define RIGHT_SERVO_PIN 13 // D7
+#define LEFT_SERVO_PIN D4 // D4
+#define RIGHT_SERVO_PIN D3 // D3
+#define RESET_SERVO_PIN D2 // D4
+
+#define MID_POINT 90
+#define RESET_POINT 140
+#define RESET_SPEED 100
+
+#define SWITCH_PIN D0
+
+#define DATA_PIN 5
+//#define DATA_PIN D1
+#define NUM_LEDS 2
+
+CRGB leds[NUM_LEDS];
 
 ESP8266WiFiMulti WiFiMulti;
 
@@ -37,8 +53,9 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
 ServoEasing LeftServo;
 ServoEasing RightServo;
+ServoEasing ResetServo;
 
-Atm_angry_arm_ani_machine angry_arm_ani_machine(LeftServo, RightServo);
+Atm_angry_arm_ani_machine angry_arm_ani_machine(LeftServo, RightServo, leds);
 
 void handle_cmd(const JsonDocument& doc){
     if (!strcmp(doc["action"].as<char *>(), "set_state"))
@@ -105,17 +122,32 @@ void setup_wifi(){
 
 void setup_animation() {
     if (LeftServo.attach(LEFT_SERVO_PIN) == INVALID_SERVO) {
-        Serial.println(F("Error attaching servo"));
+        Serial.println(F("Error attaching Left arm servo"));
     }
     if (RightServo.attach(RIGHT_SERVO_PIN) == INVALID_SERVO) {
-        Serial.println(F("Error attaching servo"));
+        Serial.println(F("Error attaching Right arm servo"));
     }
+    if (ResetServo.attach(RESET_SERVO_PIN) == INVALID_SERVO) {
+        Serial.println(F("Error attaching Reset servo"));
+    }
+
+    ResetServo.setSpeed(RESET_SPEED);
+    ResetServo.setEasingType(EASE_QUADRATIC_OUT);
+    ResetServo.write(MID_POINT);
+
+    angry_arm_ani_machine.trace( (Stream &) Serial);
     angry_arm_ani_machine.begin();
 }
+
 
 void setup() {
     //USE_SERIAL.begin(921600);
     USE_SERIAL.begin(115200);
+
+    FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+    leds[0] = CRGB::Green;
+    leds[1] = CRGB::Green;
+    FastLED.show();
 
     //USE_SERIAL.setDebugOutput(true);
 
@@ -136,6 +168,8 @@ void setup() {
 
     setup_wifi();
     setup_animation();
+
+    pinMode(SWITCH_PIN, INPUT);
 
     while(WiFiMulti.run() != WL_CONNECTED) {
         delay(100);
@@ -168,9 +202,16 @@ void loop() {
     unsigned long t = millis();
 
     webSocket.loop();
-    server.handleClient();\
+    server.handleClient();
     MDNS.update();
     automaton.run();
+
+    int buttonState = digitalRead(SWITCH_PIN);
+
+    if(buttonState == 0){
+        Serial.println("HIT, Stopping machine.");
+            angry_arm_ani_machine.stop();
+    }
 
     if((t - last_10sec) > 10 * 1000) {
         counter++;

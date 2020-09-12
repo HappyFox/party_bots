@@ -2,6 +2,7 @@
 
 #include <Automaton.h>
 
+#include <FastLED.h>
 #include <ServoEasing.h>
 
 #define ARM_UP 45
@@ -15,10 +16,10 @@ class Atm_angry_arm_ani_machine: public Machine {
  public:
   enum { IDLE, ANGRY_ARM_UP, ANGRY_ARM_DOWN, ANGRY_PAUSE }; // STATES
   enum { EVT_START, EVT_STOP, EVT_PAUSE_DONE, EVT_ARM_WAVE_DONE, EVT_SERVO_DONE, ELSE }; // EVENTS
-  Atm_angry_arm_ani_machine( ServoEasing &leftServo, ServoEasing &rightServo)
+  Atm_angry_arm_ani_machine( ServoEasing &leftServo, ServoEasing &rightServo, CRGB (&eyes)[2] )
         : leftServo(leftServo)
         , rightServo(rightServo)
-        , Machine() {};
+        , eyes(eyes) {}
   Atm_angry_arm_ani_machine& begin( void );
   Atm_angry_arm_ani_machine& trace( Stream & stream );
   Atm_angry_arm_ani_machine& trigger( int event );
@@ -35,6 +36,7 @@ class Atm_angry_arm_ani_machine: public Machine {
   void action( int id );
     ServoEasing &leftServo;
     ServoEasing &rightServo;
+    CRGB (&eyes)[2];
 
 };
 

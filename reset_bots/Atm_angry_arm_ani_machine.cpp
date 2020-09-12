@@ -53,14 +53,23 @@ void Atm_angry_arm_ani_machine::action( int id ) {
     case ENT_IDLE:
         this->leftServo.startEaseTo(ARM_MID, ARM_SPEED);
         this->rightServo.startEaseTo(ARM_MID, ARM_SPEED);
+        this->eyes[0] = CRGB::Green;
+        this->eyes[1] = CRGB::Green;
+        FastLED.show();
         return;
     case ENT_ANGRY_ARM_UP:
         this->leftServo.startEaseTo(ARM_UP, ARM_SPEED);
         this->rightServo.startEaseTo(ARM_DOWN, ARM_SPEED);
+        this->eyes[0] = CRGB::Purple;
+        this->eyes[1] = CRGB::Yellow;
+        FastLED.show();
         return;
     case ENT_ANGRY_ARM_DOWN:
         this->leftServo.startEaseTo(ARM_DOWN, ARM_SPEED);
         this->rightServo.startEaseTo(ARM_UP, ARM_SPEED);
+        this->eyes[0] = CRGB::Yellow;
+        this->eyes[1] = CRGB::Purple;
+        FastLED.show();
         return;
     case ENT_ANGRY_PAUSE:
         this->leftServo.startEaseTo(ARM_MID, ARM_SPEED);
