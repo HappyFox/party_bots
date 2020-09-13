@@ -1,10 +1,3 @@
-/*
- * WebSocketServerAllFunctionsDemo.ino
- *
- *  Created on: 10.05.2018
- *
- */
-
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -23,31 +16,39 @@
 #include <FastLED.h>
 
 #include <Automaton.h>
+#include "Atm_reset_machine.h"
 #include "Atm_angry_arm_ani_machine.h"
+
+#include "servos.h"
 
 
 #define USE_SERIAL Serial
 
 
-#define LEFT_SERVO_PIN D4 // D4
-#define RIGHT_SERVO_PIN D3 // D3
-#define RESET_SERVO_PIN D2 // D4
+#define LEFT_SERVO_PIN D4
+#define RIGHT_SERVO_PIN D3
+#define RESET_SERVO_PIN D2
 
-#define MID_POINT 90
-#define RESET_POINT 140
-#define RESET_SPEED 100
+
+
+//#define MID_POINT 90
+//#define RESET_POINT 140
+//#define RESET_SPEED 100
 
 #define SWITCH_PIN D0
 
-#define DATA_PIN 5
-//#define DATA_PIN D1
+
+#define DATA_PIN D1
 #define NUM_LEDS 2
 
+
 CRGB leds[NUM_LEDS];
+
 
 ESP8266WiFiMulti WiFiMulti;
 
 ESP8266WebServer server(80);
+
 WebSocketsServer webSocket = WebSocketsServer(81);
 
 
@@ -55,7 +56,10 @@ ServoEasing LeftServo;
 ServoEasing RightServo;
 ServoEasing ResetServo;
 
+
+Atm_reset_machine reset_machine(ResetServo);
 Atm_angry_arm_ani_machine angry_arm_ani_machine(LeftServo, RightServo, leds);
+
 
 void handle_cmd(const JsonDocument& doc){
     if (!strcmp(doc["action"].as<char *>(), "set_state"))
@@ -133,10 +137,15 @@ void setup_animation() {
 
     ResetServo.setSpeed(RESET_SPEED);
     ResetServo.setEasingType(EASE_QUADRATIC_OUT);
-    ResetServo.write(MID_POINT);
+    ResetServo.write(RESET_MID_POINT);
+
+    LeftServo.write(ARM_MID_POINT);
+    RightServo.write(ARM_MID_POINT);
 
     angry_arm_ani_machine.trace( (Stream &) Serial);
     angry_arm_ani_machine.begin();
+
+    reset_machine.begin();
 }
 
 
@@ -210,7 +219,8 @@ void loop() {
 
     if(buttonState == 0){
         Serial.println("HIT, Stopping machine.");
-            angry_arm_ani_machine.stop();
+        angry_arm_ani_machine.stop();
+        reset_machine.init_reset();
     }
 
     if((t - last_10sec) > 10 * 1000) {

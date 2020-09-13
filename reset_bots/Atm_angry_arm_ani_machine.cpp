@@ -51,8 +51,8 @@ int Atm_angry_arm_ani_machine::event( int id ) {
 void Atm_angry_arm_ani_machine::action( int id ) {
   switch ( id ) {
     case ENT_IDLE:
-        this->leftServo.startEaseTo(ARM_MID, ARM_SPEED);
-        this->rightServo.startEaseTo(ARM_MID, ARM_SPEED);
+        this->leftServo.startEaseTo(ARM_MID_POINT, ARM_SPEED);
+        this->rightServo.startEaseTo(ARM_MID_POINT, ARM_SPEED);
         this->eyes[0] = CRGB::Green;
         this->eyes[1] = CRGB::Green;
         FastLED.show();
@@ -72,8 +72,8 @@ void Atm_angry_arm_ani_machine::action( int id ) {
         FastLED.show();
         return;
     case ENT_ANGRY_PAUSE:
-        this->leftServo.startEaseTo(ARM_MID, ARM_SPEED);
-        this->rightServo.startEaseTo(ARM_MID, ARM_SPEED);
+        this->leftServo.startEaseTo(ARM_MID_POINT, ARM_SPEED);
+        this->rightServo.startEaseTo(ARM_MID_POINT, ARM_SPEED);
         return;
     case EXT_ANGRY_PAUSE:
         return;

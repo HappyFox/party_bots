@@ -5,10 +5,8 @@
 #include <FastLED.h>
 #include <ServoEasing.h>
 
-#define ARM_UP 45
-#define ARM_DOWN 135
-#define ARM_MID 90
-#define ARM_SPEED 200
+#include "servos.h"
+
 
 class Atm_angry_arm_ani_machine: public Machine {
 
